@@ -88,15 +88,15 @@ config:
         "type": "groovy",
         "content": "import groovy.json.JsonOutput; import org.sonatype.nexus.capability.CapabilityReference; import org.sonatype.nexus.capability.CapabilityType;  import org.sonatype.nexus.internal.capability.DefaultCapabilityReference;import org.sonatype.nexus.internal.capability.DefaultCapabilityRegistry; def capabilityRegistry = container.lookup(DefaultCapabilityRegistry.class.getName()); def capabilityType = CapabilityType.capabilityType('rutauth'); def capabilityProps = ['httpHeader': 'X-AUTH-STAKATER']; def capabilityNotes = 'configured through scripting api'; DefaultCapabilityReference existing = capabilityRegistry.all.find { CapabilityReference capabilityReference -> capabilityReference.context().descriptor().type() == capabilityType }; if (!existing) { capabilityRegistry.add(capabilityType, true, capabilityNotes, capabilityProps).toString(); JsonOutput.toJson([result : 'Successfully added Rut Auth!']) }"
       }
-    example-docker-hosted.json: |
+    service-starter-docker-hosted.json: |
       {
         "name": "service-starter-docker-hosted",
         "type": "groovy",
         "content": "repository.createDockerHosted('service-starter-docker-hosted', 5000, null, 'default', false, true)"
       }
-    example-docker-proxy.json: |
+    service-starter-docker-proxy.json: |
       {
         "name": "service-starter-docker-proxy",
         "type": "groovy",
-        "content": "repository.createDockerProxy('service-starter-docker-proxy', 'https://docker.io/bitnami/postgresql', 'REGISTRY', null,5001, null, 'default', false, true)"
+        "content": "repository.createDockerProxy('service-starter-docker-proxy', 'https://registry-1.docker.io', 'REGISTRY', null,5001, null, 'default', false, true)"
       }
