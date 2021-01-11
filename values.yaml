@@ -8,7 +8,7 @@ nexus:
         port: 5001
 ingress:
   enabled: true
-  annotations: {kubernetes.io/ingress.class: nginx}
+  annotations: {kubernetes.io/ingress.class: nginx,nginx.ingress.kubernetes.io/proxy-body-size: "0"}
     # kubernetes.io/ingress.class: nginx
   # kubernetes.io/tls-acme: "true"
   hostPath: /
@@ -56,7 +56,7 @@ config:
           --user "admin:$PASSWORD" \
           -H "accept: application/json" \
           -H "Content-Type: application/json" \
-          -d "{ \"name\": \"service-starter-helm-hosted\", \"online\": true, \"storage\": { \"blobStoreName\": \"default\", \"strictContentTypeValidation\": false, \"writePolicy\": \"allow_once\" }, \"cleanupPolicy\": \"weekly-cleanup\" }"
+          -d "{ \"name\": \"service-starter-helm-hosted\", \"online\": true, \"storage\": { \"blobStoreName\": \"default\", \"strictContentTypeValidation\": true, \"writePolicy\": \"allow\" }, \"cleanupPolicy\": \"weekly-cleanup\" }"
 
       printf 'ending curl command'
       printf '.........................................................................................................................'
@@ -88,15 +88,27 @@ config:
         "type": "groovy",
         "content": "import groovy.json.JsonOutput; import org.sonatype.nexus.capability.CapabilityReference; import org.sonatype.nexus.capability.CapabilityType;  import org.sonatype.nexus.internal.capability.DefaultCapabilityReference;import org.sonatype.nexus.internal.capability.DefaultCapabilityRegistry; def capabilityRegistry = container.lookup(DefaultCapabilityRegistry.class.getName()); def capabilityType = CapabilityType.capabilityType('rutauth'); def capabilityProps = ['httpHeader': 'X-AUTH-STAKATER']; def capabilityNotes = 'configured through scripting api'; DefaultCapabilityReference existing = capabilityRegistry.all.find { CapabilityReference capabilityReference -> capabilityReference.context().descriptor().type() == capabilityType }; if (!existing) { capabilityRegistry.add(capabilityType, true, capabilityNotes, capabilityProps).toString(); JsonOutput.toJson([result : 'Successfully added Rut Auth!']) }"
       }
+    docker-bearer-token-realm.json: |
+      {
+        "name": "docker-bearer-token-realm",
+        "type": "groovy",
+        "content": "import org.sonatype.nexus.security.realm.RealmManager; def realmManager = container.lookup(RealmManager.class.name); realmManager.enableRealm('DockerToken')"
+      }
     service-starter-docker-hosted.json: |
       {
         "name": "service-starter-docker-hosted",
         "type": "groovy",
-        "content": "repository.createDockerHosted('service-starter-docker-hosted', 5000, null, 'default', false, true)"
+        "content": "import org.sonatype.nexus.repository.config.WritePolicy; repository.createDockerHosted('service-starter-docker-hosted', 5000, null, 'default', true, false , WritePolicy.ALLOW, false)"
       }
     service-starter-docker-proxy.json: |
       {
         "name": "service-starter-docker-proxy",
         "type": "groovy",
-        "content": "repository.createDockerProxy('service-starter-docker-proxy', 'https://registry-1.docker.io', 'REGISTRY', null,5001, null, 'default', false, true)"
+        "content": "repository.createDockerProxy('service-starter-docker-proxy', 'https://registry-1.docker.io', 'HUB', null,5001, null, 'default', true, false ,false)"
+      }
+    anonymous.json: |
+      {
+        "name": "anonymous",
+        "type": "groovy",
+        "content": "security.setAnonymousAccess(true)"
       }
