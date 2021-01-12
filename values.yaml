@@ -106,7 +106,7 @@ config:
       {
         "name": "service-starter-docker-hub-proxy",
         "type": "groovy",
-        "content": "repository.createDockerProxy('service-starter-docker-proxy', 'https://registry-1.docker.io', 'HUB', null,5001, null, 'default', true, false ,false)"
+        "content": "repository.createDockerProxy('service-starter-docker-hub-proxy', 'https://registry-1.docker.io', 'HUB', null,5001, null, 'default', true, false ,false)"
       }
     service-starter-docker-elastic-proxy.json: |
       {
