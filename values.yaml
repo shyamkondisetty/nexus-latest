@@ -4,8 +4,10 @@ nexus:
     registries:
       - host: registry.hosted
         port: 5000
-      - host: registry.proxy
+      - host: registry.dockerhub.proxy
         port: 5001
+      - host: registry.elastic.proxy
+        port: 5002
 ingress:
   enabled: true
   annotations: {kubernetes.io/ingress.class: nginx,nginx.ingress.kubernetes.io/proxy-body-size: "0"}
@@ -100,11 +102,17 @@ config:
         "type": "groovy",
         "content": "import org.sonatype.nexus.repository.config.WritePolicy; repository.createDockerHosted('service-starter-docker-hosted', 5000, null, 'default', true, false , WritePolicy.ALLOW, false)"
       }
-    service-starter-docker-proxy.json: |
+    service-starter-docker-hub-proxy.json: |
       {
-        "name": "service-starter-docker-proxy",
+        "name": "service-starter-docker-hub-proxy",
         "type": "groovy",
         "content": "repository.createDockerProxy('service-starter-docker-proxy', 'https://registry-1.docker.io', 'HUB', null,5001, null, 'default', true, false ,false)"
+      }
+    service-starter-docker-elastic-proxy.json: |
+      {
+        "name": "service-starter-docker-elastic-proxy",
+        "type": "groovy",
+        "content": "repository.createDockerProxy('service-starter-docker-elastic-proxy', 'https://docker.elastic.co/', 'REGISTRY', null,5002, null, 'default', true, false ,false)"
       }
     anonymous.json: |
       {
