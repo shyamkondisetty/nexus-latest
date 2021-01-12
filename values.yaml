@@ -8,6 +8,11 @@ nexus:
         port: 5001
       - host: registry.elastic.proxy
         port: 5002
+  env:
+    - name: install4jAddVmParams
+      value: "-Xms1200M -Xmx1200M -XX:MaxDirectMemorySize=4G -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
+    - name: NEXUS_SECURITY_RANDOMPASSWORD
+      value: "true"
 ingress:
   enabled: true
   annotations: {kubernetes.io/ingress.class: nginx,nginx.ingress.kubernetes.io/proxy-body-size: "0"}
